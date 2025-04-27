@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Oms's 21st</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,700&display=swap" rel="stylesheet">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            background-color: pink;
+            text-align: center;
+            overflow-x: hidden;
+            height: 100%;
+            overflow: hidden;
+        }
+        #page5 {
+            overflow-y: auto;
+        }
+        #page5.active {
+            overflow-y: auto;
+        }
+        .page {
+            display: none;
+            padding: 20px;
+            min-height: 100vh;
+            box-sizing: border-box;
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+        }
+        .page.active {
+            display: block;
+        }
+        .hearts {
+            font-size: 30px;
+            color: red;
+            margin: 20px;
+        }
+        h1 {
+            color: red;
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+        input, button {
+            font-size: 20px;
+            padding: 10px;
+            margin: 10px;
+        }
+        #passwordText {
+            font-style: normal;
+        }
+        .envelope-container {
+            position: relative;
+            width: 300px;
+            height: 200px;
+            margin: 40px auto;
+            perspective: 1000px;
+        }
+        .envelope {
+            width: 100%;
+            height: 100%;
+            background: #f8d7da;
+            border: 2px solid #d6336c;
+            border-radius: 5px;
+            position: relative;
+            cursor: pointer;
+            transform-style: preserve-3d;
+            transition: all 0.5s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .envelope:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            width: 0;
+            height: 0;
+            border-left: 150px solid transparent;
+            border-right: 150px solid transparent;
+            border-top: 100px solid #f8d7da;
+            transform-origin: top;
+            transform: rotateX(0deg);
+            transition: all 0.5s ease 0.3s;
+            z-index: 3;
+        }
+        .envelope:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            width: 0;
+            height: 0;
+            border-left: 150px solid transparent;
+            border-right: 150px solid transparent;
+            border-bottom: 100px solid #d6336c;
+            z-index: 1;
+        }
+        .envelope.open {
+            transform: rotateX(180deg);
+        }
+        .envelope.open:before {
+            transform: rotateX(180deg);
+            border-top-color: #f8d7da;
+            z-index: 0;
+        }
+        .letter {
+            position: absolute;
+            width: 90%;
+            height: 90%;
+            background: white;
+            top: 5%;
+            left: 5%;
+            transition: all 1s ease;
+            transform-origin: bottom;
+            transform: scaleY(0);
+            z-index: 2;
+            padding: 15px;
+            box-sizing: border-box;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: black;
+            line-height: 1.5;
+        }
+        .envelope.open + .letter {
+            transform: scaleY(1);
+            transition-delay: 0.5s;
+        }
+        .envelope-label {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Times New Roman', serif;
+            font-size: 18px;
+            font-style: normal;
+            color: #d6336c;
+            z-index: 4;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .envelope.open ~ .envelope-label {
+            opacity: 0;
+        }
+        .balloon {
+            width: 80px;
+            height: 100px;
+            background: red;
+            position: relative;
+            display: inline-block;
+            margin: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.2s;
+            font-size: 40px;
+            line-height: 100px;
+            color: white;
+        }
+        .balloon:before {
+            content: "";
+            position: absolute;
+            bottom: -80px;
+            left: 50%;
+            width: 3px;
+            height: 80px;
+            background: black;
+            transform: translateX(-50%) rotate(10deg);
+        }
+        .hidden {
+            display: none;
+        }
+        #message {
+            margin-top: 80px;
+            font-size: 24px;
+            color: #b30059;
+        }
+        .nav-button {
+            margin-top: 40px;
+            padding: 12px 24px;
+            font-size: 20px;
+            background-color: #ff99ac;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+        }
+        .flip-card {
+            background-color: transparent;
+            width: 300px;
+            height: 400px;
+            perspective: 1000px;
+            margin: 40px auto;
+        }
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.8s;
+            transform-style: preserve-3d;
+        }
+        .flip-card.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 10px;
+        }
+        .flip-card-front {
+            background: #fff;
+        }
+        .flip-card-front img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+        .flip-card-back {
+            background-color: white;
+            color: black;
+            transform: rotateY(180deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            padding: 20px;
+        }
+        #flipHint {
+            margin-top: 10px;
+            font-size: 16px;
+            color: #b30059;
+        }
+        .scroll-letter {
+            background: #f5e7c1;
+            width: 80%;
+            max-width: 600px;
+            height: 600px;
+            margin: 20px auto;
+            padding: 80px 40px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-radius: 5px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+            background-image: linear-gradient(to bottom, 
+                rgba(255,255,255,0.3) 0%, 
+                rgba(255,255,255,0) 20%, 
+                rgba(255,255,255,0) 80%, 
+                rgba(255,255,255,0.3) 100%),
+                linear-gradient(to right, 
+                rgba(0,0,0,0.05) 0%, 
+                rgba(0,0,0,0) 5%, 
+                rgba(0,0,0,0) 95%, 
+                rgba(0,0,0,0.05) 100%);
+        }
+        .scroll-content {
+            background: rgba(255, 255, 255, 0.7);
+            padding: 40px;
+            border-radius: 5px;
+            max-height: 500px;
+            overflow-y: auto;
+            text-align: left;
+            color: #333;
+            line-height: 1.8;
+            width: 100%;
+            font-family: Calibri, sans-serif;
+        }
+        .scroll-content h2 {
+            color: #d6336c;
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 20px;
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+        }
+        .image-page {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .image-page img {
+            max-width: 80%;
+            max-height: 60vh;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+        }
+        .image-caption {
+            font-family: Calibri, sans-serif;
+            font-size: 24px;
+            color: black;
+            margin-top: 20px;
+        }
+        .heart-image-page {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: pink;
+            z-index: 100;
+        }
+        .heart-image-page img {
+            max-width: 80%;
+            max-height: 60vh;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+        }
+        .heart-image-caption {
+            font-family: Calibri, sans-serif;
+            font-size: 24px;
+            color: black;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Page 1 - Password -->
+<div id="page1" class="page active">
+    <h1>💖 Oms's 21st 💖</h1>
+    <div class="hearts">❤️ 💕 ❤️ 💕 ❤️</div>
+    <p id="passwordText">Enter password to continue:</p>
+    <input type="password" id="password" placeholder="Enter Password">
+    <br>
+    <button onclick="checkPassword()" class="nav-button">Submit</button>
+</div>
+
+<!-- Page 2 - Envelope -->
+<div id="page2" class="page">
+    <h1>💌 A Message For You 💌</h1>
+    <div class="envelope-container">
+        <div class="envelope" onclick="openEnvelope()"></div>
+        <div class="letter">Happy Birthday Oms! <br> If I were a cat, I'd like you to be my best friend in each of my 9 lives. 💖</div>
+        <div class="envelope-label">Click to open 💌</div>
+    </div>
+    <button onclick="nextPage()" class="nav-button">Next</button>
+</div>
+
+<!-- Page 3 - Balloons -->
+<div id="page3" class="page">
+    <h1>Reasons why I love you</h1>
+    <h2 style="font-size: 24px; color: #ff3366;">💖 Pop to know! 💖</h2>
+    <div id="balloon1" class="balloon" onclick="popBalloon(1)">❤️</div>
+    <div id="balloon2" class="balloon" onclick="popBalloon(2)">❤️</div>
+    <div id="balloon3" class="balloon" onclick="popBalloon(3)">❤️</div>
+    <div id="balloon4" class="balloon" onclick="popBalloon(4)">❤️</div>
+    <div id="balloon5" class="balloon" onclick="popBalloon(5)">❤️</div>
+    <div id="balloon6" class="balloon" onclick="popBalloon(6)">❤️</div>
+    <p id="message"></p>
+    <button id="nextButton" onclick="nextPage()" class="nav-button" style="display: none;">Next</button>
+    <audio id="popSound" src="https://www.soundjay.com/buttons/sounds/button-16.mp3"></audio>
+</div>
+
+<!-- Page 4 - Flip Card -->
+<div id="page4" class="page">
+    <div class="flip-card" onclick="flipCard()">
+        <div class="flip-card-inner">
+            <div class="flip-card-front">
+                <img src="https://i.postimg.cc/HnZY5qVs/IMG-1815.jpg" alt="Birthday Image" style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;">
+            </div>
+            <div class="flip-card-back">
+                "teri surat se hai aalam mai baharon ko sabaat, <br> teri aankhon kay siwaa duniya main rakha kia hai?"
+            </div>
+        </div>
+    </div>
+    <div id="flipHint">Click the card to flip it</div>
+    <button onclick="nextPage()" class="nav-button">Next</button>
+</div>
+
+<!-- Page 5 - Scroll Letter -->
+<div id="page5" class="page">
+    <h1>💖 My Dearest Oms 💖</h1>
+    <div class="scroll-letter">
+        <div class="scroll-content">
+            <h2>HAPPY BIRTHDAY OMS!!!!!!</h2>
+            <p>
+                Meri dosti ki zindagi ka sabse khoobsurat hisaab tum ho. Aaj tumhari birthday tou hai magar yeh din mere liye bhi khaas hai, kyunke is din ne mujhe tumhari dosti Allah ne di. Tumhari har muskurahat, tumhari har baat, mere liye ek nayi duniya ka darwaza kholti hai. Tumhare saath guzara har lamha, ek adbi safar hai jo har waqt mere dil mein basa rehta hai, meri pyari oms.
+            </p>
+            <p>
+                Tere bina zindagi se koi shikwa to nahi,<br>
+                Bas tere bina zindagi bhi zindagi nahi.<br>
+                Oms main chahti hoon ke tumhari zindagi har roz naye rangon se bhar jaaye, har khushi tmhe naseeb ho. Cz u deserve all of it and more. Tum meri duniya ho, aur tumhari dosti mere liye us chand ke jaisa hai jo har andheron mein roshni deta hai. Sometimes, I think about the distance between us. I think about how we might grow apart. Tmhe wo tooba mjse zada azeez hjye jisse roz milti ho and das aur baten, lekin I keep reminding myself that this is my umaima, meri oms. Mine since we met 9 years ago, 7-I main. Hamary revenge plans to sir salman, hamara sabko hate krna to fake texts, wo raat jahan we spent hours talking, and wo saal jahan we grew together. No one, no one can be you oms. No one. Not laiba, not Khadija, not hania. U r my safest space. The only, only person I can trust with my eyes closed. Tm mjhe goli bhi marogi to I'll think k meri behtri k liey mari hogi, promise.
+            </p>
+            <p>
+                In a world full of passing faces,<br>
+                Yours feel like home.
+            </p>
+            <p>
+                Tumhara saath meri taqat hai, tumhara saath meri manzil tak pahunchnay ka raasta hai. Tumhari muskurahat meri roshni hai. Meri dua hai k tumhari zindagi mein har pal sukoon ho, tmhe har khushi naseeb ho aur tum apme saray khwab puray karo. Tumara har dard mera ho, or meri har khushi tumhari. :)
+            </p>
+            <p>
+                I love you so much umaima Zainab, thank you for coming in my life 9 years ago and never leaving. Thank you for always being my shoulder, my strength, my confidante, my support. Thank you for getting me flowers every day and thank you for making those handmade things, thank you for alwaysssss updating me even when I got busy with life. Thank you for always, always going an extra mile for me. Thank you for always making me feel comfortable in the fact k mjse sab chin saktay hain, bas tum nahi.
+            </p>
+            <p>
+                I love you so much best friend.<br>
+                Fi duniya wal akhira, oms x
+            </p>
+        </div>
+    </div>
+    <button onclick="showHeartImage()" class="nav-button">Next</button>
+</div>
+
+<!-- Heart Image Overlay -->
+<div id="heartImageOverlay" class="heart-image-page" style="display: none;">
+    <img src="https://i.postimg.cc/Kz97kYrK/IMG-1816.jpg" alt="Special Image">
+    <div class="heart-image-caption">my heart will hold you when my arms cannot</div>
+    <button onclick="hideHeartImage()" class="nav-button">Continue</button>
+</div>
+
+<!-- Page 6 - Cake Image -->
+<div id="page6" class="page image-page">
+    <img src="https://i.postimg.cc/XY88F3W0/cake.png" alt="Birthday Cake">
+    <div class="image-caption">happy 21st baby. can't wait to celebrate your 80 one day aswell x</div>
+    <button onclick="prevPage()" class="nav-button">Previous</button>
+</div>
+
+<script>
+let currentPage = 1;
+const totalPages = 6;
+let allowScrolling = false;
+
+function checkPassword() {
+    const password = document.getElementById('password').value;
+    if (password === "kajulovesoms") {
+        nextPage();
+    } else {
+        alert("Wrong password! Try again 🩷");
+    }
+}
+
+function openEnvelope() {
+    const envelope = document.querySelector('.envelope');
+    envelope.classList.toggle('open');
+}
+
+let popped = 0;
+const messages = [
+    "You have always, always supported me.",
+    "You update me always, even when I forget.",
+    "You love me without asking for anything back.",
+    "You are the sweetest, kindest soul I know.",
+    "You are alwayssss there to help me.",
+    "You make me believe in love."
+];
+
+function popBalloon(num) {
+    const balloon = document.getElementById('balloon' + num);
+    const sound = document.getElementById('popSound');
+    balloon.classList.add('hidden');
+    sound.play();
+    document.getElementById('message').innerText = messages[num - 1];
+    popped++;
+    if (popped === 6) {
+        document.getElementById('nextButton').style.display = 'inline-block';
+    }
+}
+
+function nextPage() {
+    if (currentPage < totalPages) {
+        // Disable scrolling when leaving page 5
+        if (currentPage === 5) {
+            document.body.style.overflow = 'hidden';
+            allowScrolling = false;
+        }
+        
+        document.getElementById(`page${currentPage}`).classList.remove('active');
+        currentPage++;
+        document.getElementById(`page${currentPage}`).classList.add('active');
+        
+        // Enable scrolling only for page 5
+        if (currentPage === 5) {
+            document.body.style.overflow = 'auto';
+            allowScrolling = true;
+        }
+    }
+}
+
+function prevPage() {
+    if (currentPage > 1) {
+        // Disable scrolling when leaving page 5
+        if (currentPage === 5) {
+            document.body.style.overflow = 'hidden';
+            allowScrolling = false;
+        }
+        
+        document.getElementById(`page${currentPage}`).classList.remove('active');
+        currentPage--;
+        document.getElementById(`page${currentPage}`).classList.add('active');
+        
+        // Enable scrolling if going back to page 5
+        if (currentPage === 5) {
+            document.body.style.overflow = 'auto';
+            allowScrolling = true;
+        }
+    }
+}
+
+function flipCard() {
+    document.querySelector('.flip-card').classList.toggle('flipped');
+}
+
+function showHeartImage() {
+    document.getElementById('heartImageOverlay').style.display = 'flex';
+}
+
+function hideHeartImage() {
+    document.getElementById('heartImageOverlay').style.display = 'none';
+    nextPage();
+}
+
+// Prevent scrolling when not on page 5
+document.addEventListener('wheel', function(e) {
+    if (!allowScrolling) {
+        e.preventDefault();
+    }
+}, { passive: false });
+
+document.addEventListener('keydown', function(e) {
+    if (!allowScrolling && ['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].indexOf(e.code) > -1) {
+        e.preventDefault();
+    }
+});
+</script>
+
+</body>
+</html>
